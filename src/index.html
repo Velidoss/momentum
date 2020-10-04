@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Momentum</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="normalize.css">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Varela+Round&display=swap" rel="stylesheet">
+</head>
+<body>
+<main class="main">
+    <div class="main-weather">
+        <div class="main-weather__short">
+            <div class="main-weather__short-title">
+                <button class="open-extended-weather-btn"><img src="./../assets/svg/chevron-down-solid.svg" alt=""></button><div class="main-weather__short-text">Weather in <span class="main-weather__location" contenteditable="false">Kiev</span></div><button class="change-weather-btn">&#9998;</button>
+            </div>
+            <div class="main-weather__short-info">
+                <img class="main-weather__type" src="" alt="">
+                <p class="main-weather__temperature"></p>
+            </div>
+        </div>
+
+        <div class="main-weather__extended">
+            <div class="main-weather__block">
+                <img class="main-weather__type" src='' alt="" >
+                <div class="main-weather__text"></div>
+            </div>
+            <div class="main-weather__block">
+                <span>Temperature</span>
+                <div class="main-weather__temperature"></div>
+            </div>
+            <div class="main-weather__block">
+                <img class="main-weather__icon" src="./../assets/svg/wind-solid.svg" alt="">
+                <div>
+                    <span class="main-weather__wind-speed"></span><span>m/s</span>
+                </div>
+            </div>
+            <div class="main-weather__block">
+                <span>Humidity:</span>
+                <div class="main-weather__humidity">
+                     <span class="main-weather__humidity-value"></span>%
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="main-content">
+        <div class="time">
+        </div>
+        <div class="date">
+        </div>
+        <div class="greeting">
+            Good Afternoon,&nbsp;<span class="greeting__name" type="text" contenteditable="false"></span> <button class="change-name-btn">&#9998;</button>
+        </div>
+        <div class="focus">
+            <p class="focus__title">
+                What Is Your Focus For Today?
+            </p>
+            <div class="focus__list">
+                <div class="focus__list-item">
+                    <span class="focus__name" type="text" contenteditable="false"></span><button class="change-focus-btn">&#9998;</button>
+                </div>
+            </div>
+
+        </div>
+        <div class="quote-block">
+            <div class="quote">
+                <q class="quote-text"></q>
+                <p class="quote-sign"></p>
+            </div>
+            <div class="quote-refresh">
+                <div class="quote-refresh-icon">&#x25CF;</div>
+                <button class="quote-refresh-btn">refresh quote</button>
+            </div>
+        </div>
+
+    </div>
+    <div class="main-change">
+        <div class="main-change-content">
+            <button class="change-picture-btn"><img class="change-picture-btn__img" src="./../assets/svg/images-regular.svg" alt="change"></button>
+            <div class="change-picture__description">change image</div>
+        </div>
+
+    </div>
+</main>
+<script src="./../dist/bundle.js"></script>
+</body>
+</html>
