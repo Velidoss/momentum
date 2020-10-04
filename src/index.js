@@ -137,7 +137,7 @@ const Data = new Date(Date.now())
 
 const getBg = (bgImgType)=>{
     let pictureId = Math.ceil(Math.random()*20)
-    main.style.background = `url("./../assets/images/${bgImgType}/${pictureId.toString()}.jpg") 50% 50% no-repeat border-box`
+    main.style.background = `url("./assets/images/${bgImgType}/${pictureId.toString()}.jpg") 50% 50% no-repeat border-box`
     main.style.backgroundSize = 'cover'
 }
 
@@ -205,7 +205,6 @@ const getUsersCity = ()=>{
 const setWeather = async()=>{
     if(localStorage.getItem('usersCity')){
         const weatherInfo = await getWeather(openWeatherApi, localStorage.getItem('usersCity'))
-        console.log(weatherInfo);
         weatherIcon.forEach(icon=>{
             icon.src = `http://openweathermap.org/img/wn/${weatherInfo.weather[0].icon}.png`
         })
