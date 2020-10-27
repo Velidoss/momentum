@@ -9,7 +9,6 @@ export const getImage = async( api, query)=>{
             return response.json()
         }
     }catch (err){
-        console.log(err);
         throw new Error('Something went wrong with getting picture')
     }
 }

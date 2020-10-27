@@ -26,12 +26,16 @@ const refreshBackground = document.querySelector('.change-picture-btn')
 const refreshBackgroundContent = document.querySelector('.main-change-content')
 
 const changeNameBtn = document.querySelector('.change-name-btn')
+const changeNameInput = document.querySelector('.greeting__name-input')
+
+const changeFocusInput = document.querySelector('.change-focus-input')
 const changeFocusBtn =  document.querySelector('.change-focus-btn')
 const extendWeatherBtn = document.querySelector('.open-extended-weather-btn')
+const changeWeatherInput = document.querySelector('.main-weather__location-change-input')
 
 // -----------------TIME
 const showTime = ()=>{
-const Data = new Date(Date.now())
+    const Data = new Date(Date.now())
 
     function determineDay(date){
         if(!(date instanceof Date)) return
@@ -85,7 +89,7 @@ const Data = new Date(Date.now())
             default:
                 return null
         }
-}
+    }
     function checkZeros(seconds){
         if(seconds.toString().length === 1){
             return '0'+seconds.toString()
@@ -93,33 +97,53 @@ const Data = new Date(Date.now())
             return seconds
         }
     }
-    const CurrentTime = `${checkZeros(Data.getHours())} : ${checkZeros(Data.getMinutes())} : ${checkZeros(Data.getSeconds())}`
-    const CurrentDate = `${determineDay(Data)} , ${Data.getDate()} of ${determineMonth(Data)} , ${Data.getFullYear()}`
+    let CurrentTime , CurrentDate
+    if(window.innerWidth >= 576 ){
+        CurrentTime = `${checkZeros(Data.getHours())} : ${checkZeros(Data.getMinutes())} : ${checkZeros(Data.getSeconds())}`
+        CurrentDate = `${determineDay(Data)} , ${Data.getDate()} of ${determineMonth(Data)} , ${Data.getFullYear()}`
+    }else{
+        CurrentTime = `${checkZeros(Data.getHours())} : ${checkZeros(Data.getMinutes())}`
+        CurrentDate =  `${Data.getDate()}.${Data.getMonth()+1}.${Data.getFullYear()}`
+    }
+
 
 
 
     time.innerHTML = CurrentTime
     date.innerHTML = CurrentDate
 
-    setInterval( showTime,1000)
+    setTimeout( showTime,1000)
 }
 
 // -----------------TIME
 
 //----------------------get img-----------------------
 
- function getBgImg (){
+let bgPaths = {
+    'morning': '',
+    'day': '',
+    'evening': '',
+    'night':''
+}
+function createBgList (){
+    for(let i = 0 ; i<Object.keys(bgPaths).length; i++){
+        bgPaths[Object.keys(bgPaths)[i]] = `url("./../assets/images/${Object.keys(bgPaths)[i]}/${Math.ceil(Math.random()*20)}.jpg") 50% 50% / cover no-repeat`
+    }
+}
+
+function getBgImg (){
+
     const hour = new Date(Date.now()).getHours()
 
-    if(hour >= 5 && hour<10 ){
+    if(hour >= 6 && hour<12 ){
         localStorage.setItem('bgImgType', 'morning')
         localStorage.setItem('fontColor', 'white')
         localStorage.setItem('textShadow', '3px 3px 2px black')
-    }else if(hour >= 10 && hour<17){
+    }else if(hour >= 12 && hour<18){
         localStorage.setItem('bgImgType', 'day')
         localStorage.setItem('fontColor', 'white')
         localStorage.setItem('textShadow', '3px 3px 2px black')
-    }else if(hour >= 18 && hour<9){
+    }else if(hour >= 18 && hour<24){
         localStorage.setItem('bgImgType', 'evening')
         localStorage.setItem('fontColor', 'white')
         localStorage.setItem('textShadow', '2px 2px black')
@@ -128,6 +152,7 @@ const Data = new Date(Date.now())
         localStorage.setItem('fontColor', 'white')
         localStorage.setItem('textShadow', '2px 2px black')
     }
+
     getBg(localStorage.getItem('bgImgType'))
 
     main.style.color = localStorage.getItem('fontColor')
@@ -136,9 +161,17 @@ const Data = new Date(Date.now())
 }
 
 const getBg = (bgImgType)=>{
-    let pictureId = Math.ceil(Math.random()*20)
-    main.style.background = `url("./assets/images/${bgImgType}/${pictureId.toString()}.jpg") 50% 50% no-repeat border-box`
-    main.style.backgroundSize = 'cover'
+    main.style.background =bgPaths[bgImgType]
+}
+const changeBg=()=>{
+    let newBg
+    for(let i = 0; i< Object.values(bgPaths).length;i++){
+        if(Object.values(bgPaths)[i] === main.style.background){
+            newBg = bgPaths[Object.keys(bgPaths)[(i+1)%4]]
+        }
+    }
+    main.style.background= newBg
+
 }
 
 
@@ -164,14 +197,17 @@ const getFocus = () =>{
 
 // set username and focus
 const setUserName = (e) =>{
-    if(e.target.innerText === ''){
+    if(e.target.value === ''){
         return
     }
-    localStorage.setItem('userName', e.target.innerText);
+    localStorage.setItem('userName', e.target.value);
 }
 
 const setFocus = (e) =>{
-    localStorage.setItem('userFocus', e.target.innerText);
+    if(e.target.value === ''){
+        return
+    }
+    localStorage.setItem('userFocus', e.target.value);
 }
 
 // show username
@@ -191,7 +227,10 @@ const getQuote = async()=>{
 //=--------------------------get WEATHER=================
 
 const setUsersCity = (e)=>{
-    localStorage.setItem('usersCity', e.target.innerText);
+    if(e.target.value === ''){
+        return
+    }
+    localStorage.setItem('usersCity', e.target.value);
 }
 
 const getUsersCity = ()=>{
@@ -215,10 +254,7 @@ const setWeather = async()=>{
         weatherWind.innerText = weatherInfo.wind.speed
         weatherHumidity.innerText = weatherInfo.main.humidity
     }else{
-        weatherDescription.style.display = 'none'
-        weatherTemperature.style.display = 'none'
-        weatherWind.style.display = 'none'
-        weatherHumidity.style.display = 'none'
+        weatherExtended.style.display = 'none'
         weatherLocation.innerText = '[enter city]'
     }
 
@@ -237,68 +273,97 @@ const checkEnterKeyOnSubmit = (element) =>{
 }
 
 //============CHANGE NAME=================================
-greetingName.addEventListener('change', setUserName)
-greetingName.addEventListener('blur', (e)=>{
-    setUserName(e)
-    getUserName()
-    greetingName.style.background = 'none'
-    greetingName.setAttribute('contenteditable', 'false')
-})
-checkEnterKeyOnSubmit(greetingName)
-
 changeNameBtn.addEventListener('click', ()=>{
-    greetingName.setAttribute('contenteditable', 'true')
-    greetingName.style.background = 'rgba(255,255,255, .4)'
-    greetingName.focus()
+    const inputWidth = greetingName.offsetWidth
+    greetingName.style.display = 'none'
+    changeNameInput.style.display = 'inline-flex'
+    changeNameInput.style.width = inputWidth.toString() + 'px'
+    changeNameInput.focus()
+    changeNameInput.setSelectionRange(changeNameInput.value.length, changeNameInput.value.length)
+    changeNameInput.addEventListener('input', ()=>{
+        changeNameInput.style.width = changeNameInput.value.length + 'ch'
+
+    })
+    changeNameInput.addEventListener('change', (e)=>{setUserName(e)})
+    changeNameInput.addEventListener('blur', (e)=>{
+        setUserName(e)
+        getUserName()
+        changeNameInput.value = ''
+        changeNameInput.style.display = 'none'
+        greetingName.style.display = 'flex'
+
+    })
 })
+checkEnterKeyOnSubmit(changeNameInput)
 //============CHANGE NAME=================================
 
 //============CHANGE FOCUS=================================
-focusName.addEventListener('keypress', setFocus)
-focusName.addEventListener('blur', (e)=>{
-    setFocus(e)
-    getFocus()
-    focusName.style.background = 'none'
-    focusName.setAttribute('contenteditable', 'false')
-})
-checkEnterKeyOnSubmit(focusName)
 
 changeFocusBtn.addEventListener('click', ()=>{
-    focusName.setAttribute('contenteditable', 'true')
-    focusName.style.background = 'rgba(255,255,255, .4)'
-    focusName.focus()
+    const inputWidth = focusName.offsetWidth
+    focusName.style.display = 'none'
+    changeFocusInput.style.display = 'inline-flex'
+    changeFocusInput.style.width = inputWidth.toString() + 'px'
+    changeFocusInput.focus()
+    changeFocusInput.setSelectionRange(changeFocusInput.value.length, changeFocusInput.value.length)
+    changeFocusInput.addEventListener('input', ()=>{
+        changeFocusInput.style.width = changeFocusInput.value.length + 'ch'
+
+    })
+    changeFocusInput.addEventListener('change', setFocus)
+    changeFocusInput.addEventListener('blur', (e)=>{
+        setFocus(e)
+        getFocus()
+        changeFocusInput.value = ''
+        changeFocusInput.style.display = 'none'
+        focusName.style.display = 'flex'
+
+    })
 })
+checkEnterKeyOnSubmit(changeFocusInput)
 //============CHANGE FOCUS=================================
 
 //============CHANGE WEATHER=================================
 
-weatherLocation.addEventListener('change', setUsersCity)
-weatherLocation.addEventListener('blur', (e)=>{
-    setUsersCity(e)
-    getUsersCity()
-    setWeather()
-    weatherLocation.style.background = 'none'
-    weatherLocation.setAttribute('contenteditable', 'false')
-})
-checkEnterKeyOnSubmit(weatherLocation)
-
-
+let hasFired = false
 changeWeatherBtn.addEventListener('click', ()=>{
-    weatherLocation.setAttribute('contenteditable', 'true')
-    weatherLocation.style.background = 'rgba(255,255,255, .4)'
-    weatherLocation.focus()
+    const inputWidth = weatherLocation.offsetWidth
+    weatherLocation.style.display = 'none'
+    changeWeatherInput.style.display = 'inline-flex'
+    changeWeatherInput.style.width = inputWidth.toString() + 'px'
+    changeWeatherInput.focus()
+    changeWeatherInput.setSelectionRange(changeWeatherInput.value.length, changeWeatherInput.value.length)
+    changeWeatherInput.addEventListener('input', ()=>{
+        changeWeatherInput.style.width = changeWeatherInput.value.length + 'ch'
+
+    })
+    changeWeatherInput.addEventListener('change', setUsersCity)
+    changeWeatherInput.addEventListener('blur', (e)=>{
+        setUsersCity(e)
+        getUsersCity()
+        changeWeatherInput.value = ''
+        changeWeatherInput.style.display = 'none'
+        weatherLocation.style.display = 'inline-flex'
+
+    })
 })
+weatherExtended.style.visibility = 'hidden'
 
 extendWeatherBtn.addEventListener('click', ()=>{
     if( weatherExtended.style.visibility === 'hidden'){
         weatherExtended.style.visibility = 'visible'
         weatherShortened.style.display = 'none'
+        weatherExtended.focus()
     }else{
+        setTimeout(()=>{
+            weatherShortened.style.display = 'flex'
+        }, 500)
         weatherExtended.style.visibility = 'hidden'
-        weatherShortened.style.display = 'flex'
+
     }
 
 })
+
 //============CHANGE WEATHER=================================
 
 
@@ -307,7 +372,7 @@ document.addEventListener('DOMContentLoaded', getQuote,getUsersCity)
 refreshQuoteBtn.addEventListener('click', getQuote)
 
 refreshBackground.addEventListener('click', ()=>{
-     getBg(localStorage.getItem('bgImgType'))
+    changeBg()
 
     refreshBackground.disabled = 'disabled'
     refreshBackgroundContent.classList.add('no-hover')
@@ -320,9 +385,11 @@ refreshBackground.addEventListener('click', ()=>{
 
 // ===================RUN------------------->>>
 showTime()
+createBgList()
 getBgImg()
 getUserName()
 getFocus()
 setWeather()
 getUsersCity()
+
 // ===================RUN------------------->>>
