@@ -1,1 +1,0 @@
-export const openWeatherApi = '99a4816af47b338490ced8ffe0a478da'
